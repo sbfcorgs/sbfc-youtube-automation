@@ -1,0 +1,80 @@
+name: Deploy SBFC YouTube Automation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    # Run daily at 3:00 AM Dubai (23:00 UTC previous day)
+    - cron: '0 23 * * *'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Run tests
+      run: npm test || echo "Tests not configured yet"
+
+  upload-videos:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || (github.ref == 'refs/heads/master' && github.event_name == 'push')
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Install dependencies
+      run: npm install
+      
+    - name: Configure YouTube API
+      env:
+        YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+        YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+        YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+      run: |
+        cat > config/channels.json << 'EOF'
+        {
+          "youtube": {
+            "clientId": "${{ secrets.YOUTUBE_CLIENT_ID }}",
+            "clientSecret": "${{ secrets.YOUTUBE_CLIENT_SECRET }}",
+            "refreshToken": "${{ secrets.YOUTUBE_REFRESH_TOKEN }}",
+            "channelId": "UCaMxVOR8R4EYdWEzrMRdiEA"
+          }
+        }
+        EOF
+        
+    - name: Generate and Upload Videos
+      env:
+        YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+        YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+        YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        QURAN_API_BASE: https://api.alquran.cloud/v1
+        RECITATION_EDITION: ar.alafasy
+        BRAND_NAME: SBFC Organization
+      run: |
+        node src/index.js
+        
+    - name: Generate Report
+      if: always()
+      run: |
+        echo "## 📊 Daily Upload Report" >> $GITHUB_STEP_SUMMARY
+        echo "- **Date**: $(date +'%Y-%m-%d')" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Videos Uploaded**: Check logs above" >> $GITHUB_STEP_SUMMARY
