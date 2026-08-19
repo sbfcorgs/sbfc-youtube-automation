@@ -1,0 +1,33 @@
+{
+  "name": "sbfc-youtube-automation",
+  "version": "1.0.0",
+  "description": "SBFC Organization - YouTube Video Automation System",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "upload": "node src/uploader.js",
+    "render": "node src/renderer.js",
+    "plan": "node src/planner.js",
+    "test": "node src/test.js",
+    "setup": "node scripts/setup.js",
+    "deploy": "node scripts/deploy.js"
+  },
+  "keywords": [
+    "youtube",
+    "automation",
+    "quran",
+    "sbfc",
+    "video-generation"
+  ],
+  "author": "SBFC Organization",
+  "license": "MIT",
+  "dependencies": {
+    "sqlite3": "^5.1.6",
+    "node-cron": "^3.0.3",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

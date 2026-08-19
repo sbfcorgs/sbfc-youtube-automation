@@ -1,0 +1,35 @@
+{
+  "safety": {
+    "enabled": true,
+    "dryRun": false,
+    "maxUploadsPerDay": 10,
+    "requireApproval": false,
+    "backupBeforeUpload": true,
+    "isolateFromWebsite": true,
+    "preventDatabaseCorruption": true
+  },
+  "limits": {
+    "maxVideoSizeMB": 100,
+    "maxDailyUploads": 10,
+    "minTimeBetweenUploadsMs": 60000,
+    "maxRetries": 3
+  },
+  "protection": {
+    "sbfcorgsWebsite": {
+      "readOnly": true,
+      "noDatabaseWrite": true,
+      "noConfigChange": true,
+      "allowedDomains": ["api.alquran.cloud", "everyayah.com", "youtube.com"]
+    },
+    "database": {
+      "backupBeforeWrite": true,
+      "maxBackups": 7,
+      "verifyIntegrity": true
+    }
+  },
+  "notifications": {
+    "onError": true,
+    "onSuccess": false,
+    "onDailyReport": true
+  }
+}
