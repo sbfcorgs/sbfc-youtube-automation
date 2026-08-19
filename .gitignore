@@ -36,3 +36,4 @@ build/
 credentials.json
 token.json
 client_secret*.json
+.github/workflows/deploy.yml
